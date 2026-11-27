@@ -25,9 +25,25 @@ export interface ProfileStore6 {
 
 import { isCalibration6, type Timeline6Request } from '../engine/gen6/tinyTimeline';
 
+export interface SeedRunSession {
+  tinySeedHex: string;
+  pressDateTime: string;
+  lagMs: number;
+  parkIndex: number;
+  windowMin: number;
+  windowMax: number;
+  armedMtSeedHex: string;
+  armedFrame: number | null;
+  achievedMtSeedHex: string;
+  rescanTsv: number | null;
+  receiptField: 'pid' | 'ec';
+  receiptHex: string;
+}
+
 export interface Session6 {
   timeline?: Timeline6Request;
   eggKey?: [number,number];
+  seedRun?: SeedRunSession;
   initialSeedHex: string;
   startFrame: number;
   endFrame: number;
@@ -35,6 +51,26 @@ export interface Session6 {
   idState: TinyState | null;
   idStartFrame: number;
   idEndFrame: number;
+}
+
+function isHexOrEmpty(value: unknown): value is string {
+  return typeof value === 'string' && (value === '' || parseHex32(value) !== null);
+}
+
+function isSeedRunSession(value: unknown): value is SeedRunSession {
+  if (!isRecord(value)) return false;
+  return isHexOrEmpty(value.tinySeedHex) &&
+    typeof value.pressDateTime === 'string' &&
+    isIntInRange(value.lagMs, 600000) &&
+    isIntInRange(value.parkIndex, 100000) &&
+    isIntInRange(value.windowMin, MAX_FRAME) &&
+    isIntInRange(value.windowMax, MAX_FRAME) &&
+    isHexOrEmpty(value.armedMtSeedHex) &&
+    (value.armedFrame === null || isIntInRange(value.armedFrame, MAX_FRAME)) &&
+    isHexOrEmpty(value.achievedMtSeedHex) &&
+    (value.rescanTsv === null || isIntInRange(value.rescanTsv, 4095)) &&
+    (value.receiptField === 'pid' || value.receiptField === 'ec') &&
+    typeof value.receiptHex === 'string';
 }
 
 export function createDefaultProfileStore6(): ProfileStore6 {
@@ -126,6 +162,7 @@ export function loadSession6(): Session6 {
         targetFrame: frame('targetFrame'),
         idState: isTinyState6(session.idState) ? session.idState : null,
         ...(isCalibration6(session.timeline) ? { timeline: session.timeline } : {}),
+        ...(isSeedRunSession(session.seedRun) ? { seedRun: session.seedRun } : {}),
         ...(Array.isArray(session.eggKey) && session.eggKey.length===2 && session.eggKey.every(v=>isIntInRange(v,0xffffffff)) ? {eggKey:session.eggKey as [number,number]} : {}),
         idStartFrame,
         idEndFrame: Math.max(idStartFrame, frame('idEndFrame')),
