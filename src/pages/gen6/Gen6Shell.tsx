@@ -15,6 +15,7 @@ import { Egg6Page } from './Egg6Page';
 import { Event6Page } from './Event6Page';
 import { Pokerus6Page } from './Pokerus6Page';
 import { Finder6Page } from './Finder6Page';
+import { SeedRun6Page } from './SeedRun6Page';
 import { Profiles6Page } from './Profiles6Page';
 
 export default function Gen6Shell() {
@@ -68,8 +69,8 @@ export default function Gen6Shell() {
       <p role="alert" className="px-3 py-1 text-xs text-rose-300">{i18n.t('gen6.storageError')}</p>}
     <main ref={mainRef} className="flex-1 w-full max-w-xl mx-auto px-3 pt-3">
       {secondary && <SectionNavigation active={tab} select={selectSection} secondary />}
-      {tab === 'seed' && <div className="gen6-seed-view"><div className="grid grid-cols-3 gap-1 rounded-2xl border border-zinc-800 bg-zinc-900 p-1 mb-2">{(['mt','timeline','finder'] as const).map(mode => <button key={mode} className="choice-button min-h-10 rounded-xl px-1 text-xs font-semibold" aria-pressed={mode === seedMode} onClick={() => selectSection6('seed', mode)}>{mode === 'mt' ? 'Seed MT' : mode === 'finder' ? 'MT Seed Finder' : 'TinyMT Timeline'}</button>)}</div>
-        {seedMode === 'mt' ? <Seed6Page session={session} updateSession={updateSession} onStationary={() => selectSection6('stationary')} /> : seedMode === 'finder' ? <Finder6Page seed={session.initialSeedHex} apply={initialSeedHex=>{updateSession({initialSeedHex});selectSection6('seed', 'mt');}}/> : <Timeline6Page key={profileScope} game={profile.gameVersion} saved={session.timeline} onSave={timeline=>updateSession({timeline})}/>}</div>}
+      {tab === 'seed' && <div className="gen6-seed-view"><div className="grid grid-cols-4 gap-1 rounded-2xl border border-zinc-800 bg-zinc-900 p-1 mb-2">{(['mt','timeline','finder','seedrun'] as const).map(mode => <button key={mode} className="choice-button min-h-10 rounded-xl px-1 text-xs font-semibold" aria-pressed={mode === seedMode} onClick={() => selectSection6('seed', mode)}>{mode === 'mt' ? 'Seed MT' : mode === 'finder' ? 'MT Seed Finder' : mode === 'seedrun' ? 'Seed Run' : 'TinyMT Timeline'}</button>)}</div>
+        {seedMode === 'mt' ? <Seed6Page session={session} updateSession={updateSession} onStationary={() => selectSection6('stationary')} /> : seedMode === 'finder' ? <Finder6Page seed={session.initialSeedHex} apply={initialSeedHex=>{updateSession({initialSeedHex});selectSection6('seed', 'mt');}}/> : seedMode === 'seedrun' ? <SeedRun6Page session={session} updateSession={updateSession} /> : <Timeline6Page key={profileScope} game={profile.gameVersion} saved={session.timeline} onSave={timeline=>updateSession({timeline})}/>}</div>}
       {tab === 'egg' && <Egg6Page key={profileScope} profile={profile} session={session} updateSession={updateSession}/>}
       {tab === 'event' && <Event6Page key={profileScope} profile={profile} session={session} updateSession={updateSession}/>}
       {tab === 'tools' && <Pokerus6Page key={profileScope} profile={profile} session={session} updateSession={updateSession}/>}

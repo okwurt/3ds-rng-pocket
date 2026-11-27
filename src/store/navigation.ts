@@ -4,7 +4,7 @@ export type ActiveGen = 'home' | 'gen7' | 'gen6';
 export type AppTab = 'seed' | 'stationary' | 'wild' | 'egg' | 'more';
 export type MoreSection = 'event' | 'id' | 'profiles' | 'tools';
 export type NavigationSection = Exclude<AppTab, 'more'> | MoreSection;
-export type SeedMode6 = 'mt' | 'timeline' | 'finder';
+export type SeedMode6 = 'mt' | 'timeline' | 'finder' | 'seedrun';
 
 interface Navigation {
   activeGen: ActiveGen;
